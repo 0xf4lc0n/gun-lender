@@ -1,50 +1,29 @@
-import com.github.javafaker.Faker;
-import gunlender.domain.entities.Account;
 import gunlender.domain.entities.Gun;
-import gunlender.domain.entities.User;
 import gunlender.domain.entities.Weapon;
 import gunlender.infrastructure.database.GunRepository;
-import gunlender.infrastructure.database.UserRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.commons.logging.Logger;
-import org.junit.platform.commons.logging.LoggerFactory;
 
-import java.io.File;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
-public class GunRepositoryTest {
-    private static final Faker FAKER = new Faker();
-    private static final List<String> databaseFiles = new ArrayList<>();
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserRepositoryTest.class);
-
-    private GunRepository getRepository() {
-        var fileName = "gunlender" + UUID.randomUUID() + ".db";
-        var connectionString = "jdbc:sqlite:" + fileName;
-        var gunRepo = new GunRepository(connectionString);
-        gunRepo.migrate();
-        databaseFiles.add(fileName);
-        return gunRepo;
+class GunRepositoryTest extends BaseRepositoryTest {
+    private GunRepository getRepository() throws Exception {
+        return (GunRepository) getRepository(GunRepository.class);
     }
 
     @Test
-    void insertingNewUserDoesNotThrow() {
+    void insertingNewUserDoesNotThrow() throws Exception {
         var gunRepo = getRepository();
         var gun = new Gun(producer(), model(), weaponType(), caliber(), weight(), length(), amount(), price(), picture());
         assertDoesNotThrow(() -> gunRepo.addGun(gun));
     }
 
     @Test
-    void retrievingAllUsersDoesNotThrow() {
+    void retrievingAllUsersDoesNotThrow() throws Exception {
         var gunRepo = getRepository();
 
         var gun1 = new Gun(producer(), model(), weaponType(), caliber(), weight(), length(), amount(), price(), picture());
@@ -62,7 +41,7 @@ public class GunRepositoryTest {
     }
 
     @Test
-    void retrievingExistingUserByIdDoesNotThrow() {
+    void retrievingExistingUserByIdDoesNotThrow() throws Exception {
         var gunRepo = getRepository();
 
         var gun1 = new Gun(producer(), model(), weaponType(), caliber(), weight(), length(), amount(), price(), picture());
@@ -77,26 +56,13 @@ public class GunRepositoryTest {
     }
 
     @Test
-    void retrievingNoneExistingUserByIdDoesNotThrow() {
+    void retrievingNoneExistingUserByIdDoesNotThrow() throws Exception {
         var gunRepo = getRepository();
 
         assertDoesNotThrow(() -> {
             var gun = gunRepo.getGunById(UUID.randomUUID());
             assert (gun.isEmpty());
         });
-    }
-
-    @AfterAll
-    static void Cleanup() {
-        var path = Paths.get(System.getProperty("user.dir"));
-        for (var db : databaseFiles) {
-            var file = new File(Paths.get(path.toString(), db).toString());
-
-            if (!file.delete()) {
-                //TODO: Change this to logger
-                System.out.println("Cannot delete file");
-            }
-        }
     }
 
     private String producer() {
@@ -135,7 +101,7 @@ public class GunRepositoryTest {
     }
 
     private double price() {
-        return FAKER.number().randomDouble(2, 10,  1000);
+        return FAKER.number().randomDouble(2, 10, 1000);
     }
 
     private String picture() {

@@ -1,44 +1,28 @@
-import com.github.javafaker.Faker;
 import gunlender.domain.entities.Ammo;
 import gunlender.infrastructure.database.AmmoRepository;
+import gunlender.infrastructure.database.UserRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.commons.logging.Logger;
-import org.junit.platform.commons.logging.LoggerFactory;
-
-import java.io.File;
-import java.nio.file.Paths;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
- class AmmoRepositoryTest {
-    private static final Faker FAKER = new Faker();
-    private static final Random RANDOM = new Random();
-    private static final List<String> databaseFiles = new ArrayList<>();
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserRepositoryTest.class);
-
-    private AmmoRepository getRepository() {
-        var fileName = "gunlender" + UUID.randomUUID() + ".db";
-        var connectionString = "jdbc:sqlite:" + fileName;
-        var ammoRepository = new AmmoRepository(connectionString);
-        ammoRepository.migrate();
-        databaseFiles.add(fileName);
-        return ammoRepository;
+ class AmmoRepositoryTest extends BaseRepositoryTest {
+    private AmmoRepository getRepository() throws Exception {
+        return (AmmoRepository) getRepository(AmmoRepository.class);
     }
 
     @Test
-    void insertingNewUserDoesNotThrow() {
+    void insertingNewUserDoesNotThrow() throws Exception {
         var ammoRepo = getRepository();
         var ammo = new Ammo(caliber(), amount(), price(), picture());
         assertDoesNotThrow(() -> ammoRepo.addAmmo(ammo));
     }
 
     @Test
-    void retrievingAllUsersDoesNotThrow() {
+    void retrievingAllUsersDoesNotThrow() throws Exception {
         var ammoRepo = getRepository();
 
         var ammo1 = new Ammo(caliber(), amount(), price(), picture());
@@ -56,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
     }
 
     @Test
-    void retrievingExistingUserByIdDoesNotThrow() {
+    void retrievingExistingUserByIdDoesNotThrow() throws Exception {
         var ammoRepo = getRepository();
 
         var ammo1 = new Ammo(caliber(), amount(), price(), picture());
@@ -71,7 +55,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
     }
 
     @Test
-    void retrievingNoneExistingUserByIdDoesNotThrow() {
+    void retrievingNoneExistingUserByIdDoesNotThrow() throws Exception {
         var ammoRepo = getRepository();
 
         assertDoesNotThrow(() -> {
@@ -80,29 +64,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
         });
     }
 
-    @AfterAll
-    static void Cleanup() {
-        var path = Paths.get(System.getProperty("user.dir"));
-        for (var db : databaseFiles) {
-            var file = new File(Paths.get(path.toString(), db).toString());
-
-            if (!file.delete()) {
-                //TODO: Change this to logger
-                System.out.println("Cannot delete file");
-            }
-        }
-    }
-
     private String caliber() {
         return FAKER.cat().breed();
     }
 
     private int amount() {
-        return RANDOM.nextInt();
+        return (int) FAKER.number().randomNumber(2, false);
     }
 
     private double price() {
-        return RANDOM.nextDouble();
+        return FAKER.number().randomDouble(2, 10,  1000);
     }
 
     private String picture() {

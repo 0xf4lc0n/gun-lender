@@ -1,5 +1,6 @@
 package gunlender.infrastructure.database;
 
+import gunlender.application.Repository;
 import gunlender.domain.entities.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class UserRepository {
+public class UserRepository implements Repository {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserRepository.class);
     private final String databaseUrl;
 

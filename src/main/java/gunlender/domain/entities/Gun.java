@@ -19,8 +19,9 @@ public class Gun {
     private double price;
     private String picture;
 
-    private static final String SQL_DEFINITION = "(Id string, Producer string, Model id, Type string, Caliber string," +
-            "Weight double, Length int, Amount int, Price double, Picture string)";
+    private static final String SQL_DEFINITION = "(Id VARCHAR(16), Producer VARCHAR(128), Model VARCHAR(64), " +
+            "Type VARCHAR(64), Caliber VARCHAR(32), Weight DOUBLE, Length INT, Amount INT, Price DECIMAL(5,2), " +
+            "Picture VARCHAR(256))";
 
     public Gun(String producer, String model, Weapon.WeaponType type, String caliber, double weight,
                int length, int amount, double price, String picture) {

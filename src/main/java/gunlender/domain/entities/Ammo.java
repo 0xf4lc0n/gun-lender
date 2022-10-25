@@ -14,7 +14,8 @@ public class Ammo {
     private double price;
     private String picture;
 
-    private static final String SQL_DEFINITION = "(Id string, Caliber string, Amount id, Price double, Picture string)";
+    private static final String SQL_DEFINITION = "(Id VARCHAR(16), Caliber VARCHAR(32), Amount INT, " +
+            "Price DECIMAL(3,2), Picture VARCHAR(256))";
 
 
     public Ammo(String caliber, int amount, double price, String picture) {

@@ -19,7 +19,7 @@ public class Gun {
     private double price;
     private String picture;
 
-    private static final String SQL_DEFINITION = "(Id VARCHAR(16), Producer VARCHAR(128), Model VARCHAR(64), " +
+    private static final String SQL_DEFINITION = "(Id VARCHAR(16) UNIQUE, Producer VARCHAR(128), Model VARCHAR(64), " +
             "Type VARCHAR(64), Caliber VARCHAR(32), Weight DOUBLE, Length INT, Amount INT, Price DECIMAL(5,2), " +
             "Picture VARCHAR(256))";
 

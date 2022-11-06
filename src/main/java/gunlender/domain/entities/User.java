@@ -19,9 +19,9 @@ public class User {
     private String passwordHash;
     private Account.AccountType accountType;
 
-    private static final String SQL_DEFINITION = "(Id VARCHAR(16), FirstName VARCHAR(64), LastName VARCHAR(128), " +
-            "Email VARCHAR(64), Login VARCHAR(32), PasswordHash VARCHAR(512), PhoneNumber VARCHAR(9), " +
-            "AccountType VARCHAR(32))";
+    private static final String SQL_DEFINITION = "(Id VARCHAR(16) UNIQUE, FirstName VARCHAR(64), " +
+            "LastName VARCHAR(128), Email VARCHAR(64) UNIQUE, Login VARCHAR(32) UNIQUE, PasswordHash VARCHAR(512), " +
+            "PhoneNumber VARCHAR(9) UNIQUE, AccountType VARCHAR(32))";
 
     public User(String firstName, String lastName, String email, String phoneNumber, String login, String passwordHash,
                 Account.AccountType type) {

@@ -14,7 +14,7 @@ public class Ammo {
     private double price;
     private String picture;
 
-    private static final String SQL_DEFINITION = "(Id VARCHAR(16), Caliber VARCHAR(32), Amount INT, " +
+    private static final String SQL_DEFINITION = "(Id VARCHAR(16) UNIQUE, Caliber VARCHAR(32), Amount INT, " +
             "Price DECIMAL(3,2), Picture VARCHAR(256))";
 
 
@@ -43,9 +43,6 @@ public class Ammo {
     public static String toSqlTableDefinition() {
         return SQL_DEFINITION;
     }
-
-
-
 
     @Override
     public String toString() {

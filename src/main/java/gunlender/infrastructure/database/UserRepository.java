@@ -2,8 +2,7 @@ package gunlender.infrastructure.database;
 
 import gunlender.application.Repository;
 import gunlender.domain.entities.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import gunlender.domain.exceptions.RepositoryException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,14 +11,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class UserRepository implements Repository {
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserRepository.class);
     private final String databaseUrl;
 
     public UserRepository(String databaseUrl) {
         this.databaseUrl = databaseUrl;
     }
 
-    public List<User> getUsers() {
+    public List<User> getUsers() throws RepositoryException {
         var users = new ArrayList<User>();
 
         try (var connection = getConnection()) {
@@ -34,13 +32,13 @@ public class UserRepository implements Repository {
                 }
             }
         } catch (SQLException e) {
-            LOGGER.error("Cannot get users from database", e);
+            throw new RepositoryException("Cannot get users from database", e);
         }
 
         return users;
     }
 
-    public Optional<User> getUserById(UUID uuid) {
+    public Optional<User> getUserById(UUID uuid) throws RepositoryException {
         Optional<User> user = Optional.empty();
 
         try (var connection = getConnection()) {
@@ -55,14 +53,15 @@ public class UserRepository implements Repository {
                 }
             }
         } catch (SQLException e) {
-            LOGGER.error("Cannot get users from database", e);
+            var msg = String.format("Cannot get user with id '%s' from database", uuid.toString());
+            throw new RepositoryException(msg, e);
         }
 
         return user;
     }
 
 
-    public void addUser(User user) {
+    public void addUser(User user) throws RepositoryException {
         try (var connection = getConnection()) {
             try (var statement = connection.prepareStatement("insert into users values (?, ? ,? ,?, ? ,?, ?, ?)")) {
                 statement.setQueryTimeout(30);
@@ -79,18 +78,18 @@ public class UserRepository implements Repository {
                 statement.executeUpdate();
             }
         } catch (SQLException e) {
-            LOGGER.error("Cannot insert user to database", e);
+            throw new RepositoryException("Cannot insert user to database", e);
         }
     }
 
-    public void migrate() {
+    public void migrate() throws RepositoryException {
         try (var connection = getConnection()) {
             try (var statement = connection.createStatement()) {
                 statement.setQueryTimeout(30);
                 statement.executeUpdate(String.format("create table if not exists users %s", User.toSqlTableDefinition()));
             }
         } catch (SQLException e) {
-            LOGGER.error("Cannot migrate 'users' table", e);
+            throw new RepositoryException("Cannot migrate 'users' table", e);
         }
     }
 

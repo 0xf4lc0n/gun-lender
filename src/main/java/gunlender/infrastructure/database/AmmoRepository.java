@@ -2,8 +2,7 @@ package gunlender.infrastructure.database;
 
 import gunlender.application.Repository;
 import gunlender.domain.entities.Ammo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import gunlender.domain.exceptions.RepositoryException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,14 +11,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class AmmoRepository implements Repository {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AmmoRepository.class);
     private final String databaseUrl;
 
     public AmmoRepository(String databaseUrl) {
         this.databaseUrl = databaseUrl;
     }
 
-    public List<Ammo> getAmmo() {
+    public List<Ammo> getAmmo() throws RepositoryException {
         var ammo = new ArrayList<Ammo>();
 
         try (var connection = getConnection()) {
@@ -34,13 +32,13 @@ public class AmmoRepository implements Repository {
                 }
             }
         } catch (SQLException e) {
-            LOGGER.error("Cannot get ammo from database", e);
+            throw new RepositoryException("Cannot get all ammo data from database", e);
         }
 
         return ammo;
     }
 
-    public Optional<Ammo> getAmmoById(UUID uuid) {
+    public Optional<Ammo> getAmmoById(UUID uuid) throws RepositoryException {
         Optional<Ammo> ammo = Optional.empty();
 
         try (var connection = getConnection()) {
@@ -55,14 +53,15 @@ public class AmmoRepository implements Repository {
                 }
             }
         } catch (SQLException e) {
-            LOGGER.error("Cannot get ammo from database", e);
+            var msg = String.format("Cannot get ammo with Id '%s' from database", uuid.toString());
+            throw new RepositoryException(msg, e);
         }
 
         return ammo;
     }
 
 
-    public void addAmmo(Ammo ammo) {
+    public void addAmmo(Ammo ammo) throws RepositoryException {
         try (var connection = getConnection()) {
             try (var statement = connection.prepareStatement("insert into ammo values (?, ?, ?, ?, ?)")) {
                 statement.setQueryTimeout(30);
@@ -76,18 +75,18 @@ public class AmmoRepository implements Repository {
                 statement.executeUpdate();
             }
         } catch (SQLException e) {
-            LOGGER.error("Cannot insert ammo to database", e);
+            throw new RepositoryException("Cannot insert ammo to database", e);
         }
     }
 
-    public void migrate() {
+    public void migrate() throws RepositoryException {
         try (var connection = getConnection()) {
             try (var statement = connection.createStatement()) {
                 statement.setQueryTimeout(30);
                 statement.executeUpdate(String.format("create table if not exists ammo %s", Ammo.toSqlTableDefinition()));
             }
         } catch (SQLException e) {
-            LOGGER.error("Cannot migrate 'ammo' table", e);
+            throw new RepositoryException("Cannot migrate 'ammo' table", e);
         }
     }
 

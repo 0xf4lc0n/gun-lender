@@ -2,8 +2,7 @@ package gunlender.infrastructure.database;
 
 import gunlender.application.Repository;
 import gunlender.domain.entities.Gun;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import gunlender.domain.exceptions.RepositoryException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,14 +11,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class GunRepository implements Repository {
-    private static final Logger LOGGER = LoggerFactory.getLogger(GunRepository.class);
     private final String databaseUrl;
 
     public GunRepository(String databaseUrl) {
         this.databaseUrl = databaseUrl;
     }
 
-    public List<Gun> getGuns() {
+    public List<Gun> getGuns() throws RepositoryException {
         var guns = new ArrayList<Gun>();
 
         try (var connection = getConnection()) {
@@ -33,13 +31,13 @@ public class GunRepository implements Repository {
                 }
             }
         } catch (SQLException e) {
-            LOGGER.error("Cannot get guns from database", e);
+            throw new RepositoryException("Cannot get all guns from database", e);
         }
 
         return guns;
     }
 
-    public Optional<Gun> getGunById(UUID uuid) {
+    public Optional<Gun> getGunById(UUID uuid) throws RepositoryException {
         Optional<Gun> gun = Optional.empty();
 
         try (var connection = getConnection()) {
@@ -54,14 +52,15 @@ public class GunRepository implements Repository {
                 }
             }
         } catch (SQLException e) {
-            LOGGER.error("Cannot get gun from database", e);
+            var msg = String.format("Cannot get gun with Id '%s' from database", uuid.toString());
+            throw new RepositoryException(msg, e);
         }
 
         return gun;
     }
 
 
-    public void addGun(Gun gun) {
+    public void addGun(Gun gun) throws RepositoryException {
         try (var connection = getConnection()) {
             try (var statement = connection.prepareStatement("insert into guns values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
                 statement.setQueryTimeout(30);
@@ -80,18 +79,18 @@ public class GunRepository implements Repository {
                 statement.executeUpdate();
             }
         } catch (SQLException e) {
-            LOGGER.error("Cannot insert gun: '{}' to database", gun, e);
+            throw new RepositoryException("Cannot insert gun to database", e);
         }
     }
 
-    public void migrate() {
+    public void migrate() throws RepositoryException {
         try (var connection = getConnection()) {
             try (var statement = connection.createStatement()) {
                 statement.setQueryTimeout(30);
                 statement.executeUpdate(String.format("create table if not exists guns %s", Gun.toSqlTableDefinition()));
             }
         } catch (SQLException e) {
-            LOGGER.error("Cannot migrate 'guns' table", e);
+            throw new RepositoryException("Cannot migrate 'guns' table", e);
         }
     }
 

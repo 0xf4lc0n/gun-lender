@@ -65,6 +65,32 @@ class UserRepositoryTest extends BaseRepositoryTest {
             assert (user.isEmpty());
         });
     }
+
+    @Test
+    void retrievingExistingUserByEmailDoesNotThrow() throws Exception {
+        var userRepo = getRepository();
+
+        var user1 = new User(firstName(), lastName(), emailAddress(), phoneNumber(), login(), passwordHash(), Account.AccountType.STANDARD);
+
+        assertDoesNotThrow(() -> userRepo.addUser(user1));
+
+        assertDoesNotThrow(() -> {
+            var user = userRepo.getUserByEmail(user1.getEmail());
+            assert (user.isPresent());
+            assertEquals(user.get().getEmail(), user1.getEmail());
+        });
+    }
+
+    @Test
+    void retrievingNonExistingUserByEmailDoesNotThrow() throws Exception {
+        var userRepo = getRepository();
+
+        assertDoesNotThrow(() -> {
+            var user = userRepo.getUserByEmail(emailAddress());
+            assert (user.isEmpty());
+        });
+    }
+
     @Test
     void insertingUserWithExistingEmailAddressThrows() throws Exception {
         var userRepo = getRepository();

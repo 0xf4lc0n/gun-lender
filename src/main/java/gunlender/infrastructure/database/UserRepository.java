@@ -60,6 +60,28 @@ public class UserRepository implements Repository {
         return user;
     }
 
+    public Optional<User> getUserByEmail(String email) throws RepositoryException {
+        Optional<User> user = Optional.empty();
+
+        try (var connection = getConnection()) {
+            try (var statement = connection.prepareStatement("select * from users where Email = ?")) {
+                statement.setString(1, email);
+                statement.setQueryTimeout(30);
+
+                var rs = statement.executeQuery();
+
+                if (rs.next()) {
+                    user = Optional.of(User.fromResultSet(rs));
+                }
+            }
+        } catch (SQLException e) {
+            var msg = String.format("Cannot get user with email address '%s' from database", email);
+            throw new RepositoryException(msg, e);
+        }
+
+        return user;
+    }
+
 
     public void addUser(User user) throws RepositoryException {
         try (var connection = getConnection()) {

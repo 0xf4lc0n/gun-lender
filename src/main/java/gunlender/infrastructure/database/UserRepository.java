@@ -82,6 +82,27 @@ public class UserRepository implements Repository {
         return user;
     }
 
+    public Optional<User> getUserByLogin(String login) throws RepositoryException {
+        Optional<User> user = Optional.empty();
+
+        try (var connection = getConnection()) {
+            try (var statement = connection.prepareStatement("select * from users where Login = ?")) {
+                statement.setString(1, login);
+                statement.setQueryTimeout(30);
+
+                var rs = statement.executeQuery();
+
+                if (rs.next()) {
+                    user = Optional.of(User.fromResultSet(rs));
+                }
+            }
+        } catch (SQLException e) {
+            var msg = String.format("Cannot get user with login '%s' from database", login);
+            throw new RepositoryException(msg, e);
+        }
+
+        return user;
+    }
 
     public void addUser(User user) throws RepositoryException {
         try (var connection = getConnection()) {

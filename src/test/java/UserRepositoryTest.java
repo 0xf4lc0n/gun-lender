@@ -1,8 +1,10 @@
 import gunlender.domain.entities.Account;
 import gunlender.domain.entities.User;
+import gunlender.domain.exceptions.RepositoryException;
 import gunlender.infrastructure.database.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+
 import java.util.Locale;
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
@@ -63,7 +65,47 @@ class UserRepositoryTest extends BaseRepositoryTest {
             assert (user.isEmpty());
         });
     }
+    @Test
+    void insertingUserWithExistingEmailAddressThrows() throws Exception {
+        var userRepo = getRepository();
 
+        var email = emailAddress();
+
+        var user1 = new User(firstName(), lastName(), email, phoneNumber(), login(), passwordHash(), Account.AccountType.STANDARD);
+        var user2 = new User(firstName(), lastName(), email, phoneNumber(), login(), passwordHash(), Account.AccountType.STANDARD);
+
+        assertDoesNotThrow(() ->userRepo.addUser(user1));
+
+        assertThrows(RepositoryException.class,() -> userRepo.addUser(user2));
+    }
+
+    @Test
+    void insertingUserWithExistingLoginThrows() throws Exception {
+        var userRepo = getRepository();
+
+        var login = login();
+
+        var user1 = new User(firstName(), lastName(), emailAddress(), phoneNumber(), login, passwordHash(), Account.AccountType.STANDARD);
+        var user2 = new User(firstName(), lastName(), emailAddress(), phoneNumber(), login, passwordHash(), Account.AccountType.STANDARD);
+
+        assertDoesNotThrow(() ->userRepo.addUser(user1));
+
+        assertThrows(RepositoryException.class,() -> userRepo.addUser(user2));
+    }
+
+    @Test
+    void insertingUserWithExistingPhoneNumberThrows() throws Exception {
+        var userRepo = getRepository();
+
+        var phoneNumber = phoneNumber();
+
+        var user1 = new User(firstName(), lastName(), emailAddress(), phoneNumber, login(), passwordHash(), Account.AccountType.STANDARD);
+        var user2 = new User(firstName(), lastName(), emailAddress(), phoneNumber, login(), passwordHash(), Account.AccountType.STANDARD);
+
+        assertDoesNotThrow(() ->userRepo.addUser(user1));
+
+        assertThrows(RepositoryException.class,() -> userRepo.addUser(user2));
+    }
     private String firstName() {
         return FAKER.name().firstName();
     }

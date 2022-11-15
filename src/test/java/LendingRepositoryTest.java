@@ -64,7 +64,7 @@ class LendingRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    void retrievingNoneExistingLendingByUserIdDoesNotThrow() throws Exception {
+    void retrievingNonExistingLendingByUserIdDoesNotThrow() throws Exception {
         var lendingRepo = getRepository();
 
         assertDoesNotThrow(() -> {
@@ -95,7 +95,7 @@ class LendingRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    void retrievingNoneExistingLendingByGunIdDoesNotThrow() throws Exception {
+    void retrievingNonExistingLendingByGunIdDoesNotThrow() throws Exception {
         var lendingRepo = getRepository();
 
         assertDoesNotThrow(() -> {
@@ -127,7 +127,7 @@ class LendingRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    void retrievingNoneExistingLendingByAmmoIdDoesNotThrow() throws Exception {
+    void retrievingNonExistingLendingByAmmoIdDoesNotThrow() throws Exception {
         var lendingRepo = getRepository();
 
         assertDoesNotThrow(() -> {

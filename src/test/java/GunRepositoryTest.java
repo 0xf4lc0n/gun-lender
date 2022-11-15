@@ -56,7 +56,7 @@ class GunRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    void retrievingNoneExistingUserByIdDoesNotThrow() throws Exception {
+    void retrievingNonExistingUserByIdDoesNotThrow() throws Exception {
         var gunRepo = getRepository();
 
         assertDoesNotThrow(() -> {

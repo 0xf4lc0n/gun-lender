@@ -57,7 +57,7 @@ class UserRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    void retrievingNoneExistingUserByIdDoesNotThrow() throws Exception {
+    void retrievingNonExistingUserByIdDoesNotThrow() throws Exception {
         var userRepo = getRepository();
 
         assertDoesNotThrow(() -> {

@@ -55,7 +55,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
     }
 
     @Test
-    void retrievingNoneExistingUserByIdDoesNotThrow() throws Exception {
+    void retrievingNonExistingUserByIdDoesNotThrow() throws Exception {
         var ammoRepo = getRepository();
 
         assertDoesNotThrow(() -> {

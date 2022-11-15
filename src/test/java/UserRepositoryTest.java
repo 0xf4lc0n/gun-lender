@@ -19,7 +19,7 @@ class UserRepositoryTest extends BaseRepositoryTest {
     @Test
     void insertingNewUserDoesNotThrow() throws Exception {
         var userRepo = getRepository();
-        var user = new User(firstName(), lastName(), emailAddress(), phoneNumber(), login(), passwordHash(), Account.AccountType.STANDARD);
+        var user = new User(firstName(), lastName(), emailAddress(), phoneNumber(), passwordHash(), Account.AccountType.STANDARD);
         assertDoesNotThrow(() -> userRepo.addUser(user));
     }
 
@@ -27,9 +27,9 @@ class UserRepositoryTest extends BaseRepositoryTest {
     void retrievingAllUsersDoesNotThrow() throws Exception {
         var userRepo = getRepository();
 
-        var user1 = new User(firstName(), lastName(), emailAddress(), phoneNumber(), login(), passwordHash(), Account.AccountType.STANDARD);
-        var user2 = new User(firstName(), lastName(), emailAddress(), phoneNumber(), login(), passwordHash(), Account.AccountType.STANDARD);
-        var user3 = new User(firstName(), lastName(), emailAddress(), phoneNumber(), login(), passwordHash(), Account.AccountType.STANDARD);
+        var user1 = new User(firstName(), lastName(), emailAddress(), phoneNumber(), passwordHash(), Account.AccountType.STANDARD);
+        var user2 = new User(firstName(), lastName(), emailAddress(), phoneNumber(), passwordHash(), Account.AccountType.STANDARD);
+        var user3 = new User(firstName(), lastName(), emailAddress(), phoneNumber(), passwordHash(), Account.AccountType.STANDARD);
 
         assertDoesNotThrow(() -> userRepo.addUser(user1));
         assertDoesNotThrow(() -> userRepo.addUser(user2));
@@ -45,7 +45,7 @@ class UserRepositoryTest extends BaseRepositoryTest {
     void retrievingExistingUserByIdDoesNotThrow() throws Exception {
         var userRepo = getRepository();
 
-        var user1 = new User(firstName(), lastName(), emailAddress(), phoneNumber(), login(), passwordHash(), Account.AccountType.STANDARD);
+        var user1 = new User(firstName(), lastName(), emailAddress(), phoneNumber(), passwordHash(), Account.AccountType.STANDARD);
 
         assertDoesNotThrow(() -> userRepo.addUser(user1));
 
@@ -70,7 +70,7 @@ class UserRepositoryTest extends BaseRepositoryTest {
     void retrievingExistingUserByEmailDoesNotThrow() throws Exception {
         var userRepo = getRepository();
 
-        var user1 = new User(firstName(), lastName(), emailAddress(), phoneNumber(), login(), passwordHash(), Account.AccountType.STANDARD);
+        var user1 = new User(firstName(), lastName(), emailAddress(), phoneNumber(), passwordHash(), Account.AccountType.STANDARD);
 
         assertDoesNotThrow(() -> userRepo.addUser(user1));
 
@@ -92,52 +92,13 @@ class UserRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    void retrievingExistingUserByLoginDoesNotThrow() throws Exception {
-        var userRepo = getRepository();
-
-        var user1 = new User(firstName(), lastName(), emailAddress(), phoneNumber(), login(), passwordHash(), Account.AccountType.STANDARD);
-
-        assertDoesNotThrow(() -> userRepo.addUser(user1));
-
-        assertDoesNotThrow(() -> {
-            var user = userRepo.getUserByLogin(user1.getLogin());
-            assert (user.isPresent());
-            assertEquals(user.get().getLogin(), user1.getLogin());
-        });
-    }
-
-    @Test
-    void retrievingNonExistingUserByLoginDoesNotThrow() throws Exception {
-        var userRepo = getRepository();
-
-        assertDoesNotThrow(() -> {
-            var user = userRepo.getUserByLogin(login());
-            assert (user.isEmpty());
-        });
-    }
-
-    @Test
     void insertingUserWithExistingEmailAddressThrows() throws Exception {
         var userRepo = getRepository();
 
         var email = emailAddress();
 
-        var user1 = new User(firstName(), lastName(), email, phoneNumber(), login(), passwordHash(), Account.AccountType.STANDARD);
-        var user2 = new User(firstName(), lastName(), email, phoneNumber(), login(), passwordHash(), Account.AccountType.STANDARD);
-
-        assertDoesNotThrow(() ->userRepo.addUser(user1));
-
-        assertThrows(RepositoryException.class,() -> userRepo.addUser(user2));
-    }
-
-    @Test
-    void insertingUserWithExistingLoginThrows() throws Exception {
-        var userRepo = getRepository();
-
-        var login = login();
-
-        var user1 = new User(firstName(), lastName(), emailAddress(), phoneNumber(), login, passwordHash(), Account.AccountType.STANDARD);
-        var user2 = new User(firstName(), lastName(), emailAddress(), phoneNumber(), login, passwordHash(), Account.AccountType.STANDARD);
+        var user1 = new User(firstName(), lastName(), email, phoneNumber(), passwordHash(), Account.AccountType.STANDARD);
+        var user2 = new User(firstName(), lastName(), email, phoneNumber(), passwordHash(), Account.AccountType.STANDARD);
 
         assertDoesNotThrow(() ->userRepo.addUser(user1));
 
@@ -150,8 +111,8 @@ class UserRepositoryTest extends BaseRepositoryTest {
 
         var phoneNumber = phoneNumber();
 
-        var user1 = new User(firstName(), lastName(), emailAddress(), phoneNumber, login(), passwordHash(), Account.AccountType.STANDARD);
-        var user2 = new User(firstName(), lastName(), emailAddress(), phoneNumber, login(), passwordHash(), Account.AccountType.STANDARD);
+        var user1 = new User(firstName(), lastName(), emailAddress(), phoneNumber, passwordHash(), Account.AccountType.STANDARD);
+        var user2 = new User(firstName(), lastName(), emailAddress(), phoneNumber, passwordHash(), Account.AccountType.STANDARD);
 
         assertDoesNotThrow(() ->userRepo.addUser(user1));
 
@@ -172,10 +133,6 @@ class UserRepositoryTest extends BaseRepositoryTest {
 
     private String phoneNumber() {
         return FAKER.phoneNumber().phoneNumber();
-    }
-
-    private String login() {
-        return FAKER.cat().name();
     }
 
     private String passwordHash() {

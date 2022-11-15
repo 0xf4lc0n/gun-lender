@@ -12,25 +12,21 @@ public class User {
     private String firstName;
     private String lastName;
     private String email;
-
     private String phoneNumber;
-    private String login;
-
     private String passwordHash;
     private Account.AccountType accountType;
 
     private static final String SQL_DEFINITION = "(Id VARCHAR(16) UNIQUE, FirstName VARCHAR(64), " +
-            "LastName VARCHAR(128), Email VARCHAR(64) UNIQUE, Login VARCHAR(32) UNIQUE, PasswordHash VARCHAR(512), " +
+            "LastName VARCHAR(128), Email VARCHAR(64) UNIQUE, PasswordHash VARCHAR(512), " +
             "PhoneNumber VARCHAR(9) UNIQUE, AccountType VARCHAR(32))";
 
-    public User(String firstName, String lastName, String email, String phoneNumber, String login, String passwordHash,
+    public User(String firstName, String lastName, String email, String phoneNumber, String passwordHash,
                 Account.AccountType type) {
         this.id = UUID.randomUUID();
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.login = login;
         this.passwordHash = passwordHash;
         this.accountType = type;
     }
@@ -43,7 +39,6 @@ public class User {
         user.id = UUID.fromString(rs.getString("Id"));
         user.firstName = rs.getString("FirstName");
         user.lastName = rs.getString("LastName");
-        user.login = rs.getString("Login");
         user.email = rs.getString("Email");
         user.passwordHash = rs.getString("PasswordHash");
         user.phoneNumber = rs.getString("PhoneNumber");
@@ -64,7 +59,6 @@ public class User {
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
-                ", login='" + login + '\'' +
                 ", passwordHash='" + passwordHash + '\'' +
                 ", accountType=" + accountType +
                 '}';

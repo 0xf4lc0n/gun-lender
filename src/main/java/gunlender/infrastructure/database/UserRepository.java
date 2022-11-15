@@ -82,41 +82,18 @@ public class UserRepository implements Repository {
         return user;
     }
 
-    public Optional<User> getUserByLogin(String login) throws RepositoryException {
-        Optional<User> user = Optional.empty();
-
-        try (var connection = getConnection()) {
-            try (var statement = connection.prepareStatement("select * from users where Login = ?")) {
-                statement.setString(1, login);
-                statement.setQueryTimeout(30);
-
-                var rs = statement.executeQuery();
-
-                if (rs.next()) {
-                    user = Optional.of(User.fromResultSet(rs));
-                }
-            }
-        } catch (SQLException e) {
-            var msg = String.format("Cannot get user with login '%s' from database", login);
-            throw new RepositoryException(msg, e);
-        }
-
-        return user;
-    }
-
     public void addUser(User user) throws RepositoryException {
         try (var connection = getConnection()) {
-            try (var statement = connection.prepareStatement("insert into users values (?, ? ,? ,?, ? ,?, ?, ?)")) {
+            try (var statement = connection.prepareStatement("insert into users values (?, ? ,? ,?, ? ,?, ?)")) {
                 statement.setQueryTimeout(30);
 
                 statement.setString(1, user.getId().toString());
                 statement.setString(2, user.getFirstName());
                 statement.setString(3, user.getLastName());
                 statement.setString(4, user.getEmail());
-                statement.setString(5, user.getLogin());
-                statement.setString(6, user.getPasswordHash());
-                statement.setString(7, user.getPhoneNumber());
-                statement.setString(8, user.getAccountType().name());
+                statement.setString(5, user.getPasswordHash());
+                statement.setString(6, user.getPhoneNumber());
+                statement.setString(7, user.getAccountType().name());
 
                 statement.executeUpdate();
             }

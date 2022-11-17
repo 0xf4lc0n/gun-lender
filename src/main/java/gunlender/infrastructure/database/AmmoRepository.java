@@ -38,6 +38,19 @@ public class AmmoRepository implements Repository {
         return ammo;
     }
 
+
+    public int removeAmmo(UUID uuid) throws RepositoryException {
+        try (final Connection connection = getConnection()) {
+            try (final PreparedStatement statement = connection.prepareStatement("delete from ammo where Id = ?")) {
+                statement.setString(1, uuid.toString());
+                statement.setQueryTimeout(30);
+                return statement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RepositoryException(String.format("Cannot delete ammo with Id '%s' from database", uuid.toString()), e);
+        }
+    }
+
     public Optional<Ammo> getAmmoById(UUID uuid) throws RepositoryException {
         Optional<Ammo> ammo = Optional.empty();
 
@@ -60,6 +73,23 @@ public class AmmoRepository implements Repository {
         return ammo;
     }
 
+    public void updateAmmo(Ammo ammo) throws RepositoryException {
+        try (var connection = getConnection()) {
+            try (var statement = connection.prepareStatement("update ammo set caliber = ?, amount = ?, price = ?, picture = ? where id = ?")) {
+                statement.setQueryTimeout(30);
+
+                statement.setString(1, ammo.getCaliber());
+                statement.setInt(2, ammo.getAmount());
+                statement.setDouble(3, ammo.getPrice());
+                statement.setString(4, ammo.getPicture());
+                statement.setString(5, ammo.getId().toString());
+
+                statement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RepositoryException("Cannot update ammo in database", e);
+        }
+    }
 
     public void addAmmo(Ammo ammo) throws RepositoryException {
         try (var connection = getConnection()) {

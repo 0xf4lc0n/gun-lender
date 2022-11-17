@@ -19,6 +19,7 @@ import java.security.NoSuchAlgorithmException;
 import static io.javalin.apibuilder.ApiBuilder.*;
 
 public class Main {
+
     public static void main(String[] args) {
         var logger = LoggerFactory.getLogger(Main.class);
         var connectionStr = "jdbc:sqlite:gunlender.db";
@@ -55,11 +56,10 @@ public class Main {
             get("health_check", new HealthCheckHandler(), AuthManager.Role.ANYONE);
             post("register", new RegisterHandler(userRepo, cryptoService), AuthManager.Role.ANYONE);
             post("login", new LoginHandler(userRepo, cryptoService, jwtService), AuthManager.Role.ANYONE);
-            patch("user/{user-id}/password/", new ChangePasswordHandler(cryptoService, userRepo),
-                    AuthManager.Role.STANDARD_USER, AuthManager.Role.ADMINISTRATOR);
+            patch("user/{user-id}/password/", new ChangePasswordHandler(cryptoService, userRepo), AuthManager.Role.STANDARD_USER, AuthManager.Role.ADMINISTRATOR);
             patch("user/{user-id}/role/", new ChangeRoleHandler(userRepo), AuthManager.Role.ADMINISTRATOR);
-            crud("user/{user-id}", new UserController(userRepo), AuthManager.Role.STANDARD_USER,
-                    AuthManager.Role.ADMINISTRATOR);
+            crud("user/{user-id}", new UserController(userRepo), AuthManager.Role.STANDARD_USER, AuthManager.Role.ADMINISTRATOR);
+            crud("ammo/{ammo-id}", new AmmoController(ammoRepo), AuthManager.Role.STANDARD_USER, AuthManager.Role.ADMINISTRATOR);
         });
 
         app.exception(RepositoryException.class, (ex, ctx) -> {

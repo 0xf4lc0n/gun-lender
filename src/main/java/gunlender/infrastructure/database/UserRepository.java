@@ -1,8 +1,10 @@
 package gunlender.infrastructure.database;
 
 import gunlender.application.Repository;
+import gunlender.application.dto.UpdateUserDto;
 import gunlender.domain.entities.User;
 import gunlender.domain.exceptions.RepositoryException;
+import gunlender.domain.services.AuthManager;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -94,6 +96,68 @@ public class UserRepository implements Repository {
                 statement.setString(5, user.getPasswordHash());
                 statement.setString(6, user.getPhoneNumber());
                 statement.setString(7, user.getAccountType().name());
+
+                statement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RepositoryException("Cannot insert user to database", e);
+        }
+    }
+
+    public void deleteUser(UUID id) throws RepositoryException {
+        try (var connection = getConnection()) {
+            try (var statement = connection.prepareStatement("delete from users where id = ?")) {
+                statement.setQueryTimeout(30);
+                statement.setString(1, id.toString());
+
+                statement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RepositoryException("Cannot delete user form database", e);
+        }
+    }
+
+    public void updateUser(UUID id, UpdateUserDto user) throws RepositoryException {
+        try (var connection = getConnection()) {
+            try (var statement = connection.prepareStatement("update users set FirstName = ?, LastName = ?, " +
+                    "Email = ?, PhoneNumber = ? where Id = ?")) {
+                statement.setQueryTimeout(30);
+
+                statement.setString(1, user.getFirstName());
+                statement.setString(2, user.getLastName());
+                statement.setString(3, user.getEmail());
+                statement.setString(4, user.getPhoneNumber());
+                statement.setString(5, id.toString());
+
+                statement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RepositoryException("Cannot insert user to database", e);
+        }
+    }
+
+    public void updateUserPassword(UUID id, String passwordHash) throws RepositoryException {
+        try (var connection = getConnection()) {
+            try (var statement = connection.prepareStatement("update users set PasswordHash = ? where Id = ?")) {
+                statement.setQueryTimeout(30);
+
+                statement.setString(1, passwordHash);
+                statement.setString(2, id.toString());
+
+                statement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RepositoryException("Cannot insert user to database", e);
+        }
+    }
+
+    public void updateUserRole(UUID id, AuthManager.Role role) throws RepositoryException {
+        try (var connection = getConnection()) {
+            try (var statement = connection.prepareStatement("update users set AccountType = ? where Id = ?")) {
+                statement.setQueryTimeout(30);
+
+                statement.setString(1, AuthManager.roleToString(role));
+                statement.setString(2, id.toString());
 
                 statement.executeUpdate();
             }

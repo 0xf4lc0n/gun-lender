@@ -1,6 +1,6 @@
-import gunlender.domain.entities.Account;
 import gunlender.domain.entities.User;
 import gunlender.domain.exceptions.RepositoryException;
+import gunlender.domain.services.AuthManager;
 import gunlender.infrastructure.database.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ class UserRepositoryTest extends BaseRepositoryTest {
     @Test
     void insertingNewUserDoesNotThrow() throws Exception {
         var userRepo = getRepository();
-        var user = new User(firstName(), lastName(), emailAddress(), phoneNumber(), passwordHash(), Account.AccountType.STANDARD);
+        var user = new User(firstName(), lastName(), emailAddress(), phoneNumber(), passwordHash(), AuthManager.Role.STANDARD_USER);
         assertDoesNotThrow(() -> userRepo.addUser(user));
     }
 
@@ -27,9 +27,9 @@ class UserRepositoryTest extends BaseRepositoryTest {
     void retrievingAllUsersDoesNotThrow() throws Exception {
         var userRepo = getRepository();
 
-        var user1 = new User(firstName(), lastName(), emailAddress(), phoneNumber(), passwordHash(), Account.AccountType.STANDARD);
-        var user2 = new User(firstName(), lastName(), emailAddress(), phoneNumber(), passwordHash(), Account.AccountType.STANDARD);
-        var user3 = new User(firstName(), lastName(), emailAddress(), phoneNumber(), passwordHash(), Account.AccountType.STANDARD);
+        var user1 = new User(firstName(), lastName(), emailAddress(), phoneNumber(), passwordHash(), AuthManager.Role.STANDARD_USER);
+        var user2 = new User(firstName(), lastName(), emailAddress(), phoneNumber(), passwordHash(), AuthManager.Role.STANDARD_USER);
+        var user3 = new User(firstName(), lastName(), emailAddress(), phoneNumber(), passwordHash(), AuthManager.Role.STANDARD_USER);
 
         assertDoesNotThrow(() -> userRepo.addUser(user1));
         assertDoesNotThrow(() -> userRepo.addUser(user2));
@@ -45,7 +45,7 @@ class UserRepositoryTest extends BaseRepositoryTest {
     void retrievingExistingUserByIdDoesNotThrow() throws Exception {
         var userRepo = getRepository();
 
-        var user1 = new User(firstName(), lastName(), emailAddress(), phoneNumber(), passwordHash(), Account.AccountType.STANDARD);
+        var user1 = new User(firstName(), lastName(), emailAddress(), phoneNumber(), passwordHash(), AuthManager.Role.STANDARD_USER);
 
         assertDoesNotThrow(() -> userRepo.addUser(user1));
 
@@ -70,7 +70,7 @@ class UserRepositoryTest extends BaseRepositoryTest {
     void retrievingExistingUserByEmailDoesNotThrow() throws Exception {
         var userRepo = getRepository();
 
-        var user1 = new User(firstName(), lastName(), emailAddress(), phoneNumber(), passwordHash(), Account.AccountType.STANDARD);
+        var user1 = new User(firstName(), lastName(), emailAddress(), phoneNumber(), passwordHash(), AuthManager.Role.STANDARD_USER);
 
         assertDoesNotThrow(() -> userRepo.addUser(user1));
 
@@ -97,8 +97,8 @@ class UserRepositoryTest extends BaseRepositoryTest {
 
         var email = emailAddress();
 
-        var user1 = new User(firstName(), lastName(), email, phoneNumber(), passwordHash(), Account.AccountType.STANDARD);
-        var user2 = new User(firstName(), lastName(), email, phoneNumber(), passwordHash(), Account.AccountType.STANDARD);
+        var user1 = new User(firstName(), lastName(), email, phoneNumber(), passwordHash(), AuthManager.Role.STANDARD_USER);
+        var user2 = new User(firstName(), lastName(), email, phoneNumber(), passwordHash(), AuthManager.Role.STANDARD_USER);
 
         assertDoesNotThrow(() ->userRepo.addUser(user1));
 
@@ -111,8 +111,8 @@ class UserRepositoryTest extends BaseRepositoryTest {
 
         var phoneNumber = phoneNumber();
 
-        var user1 = new User(firstName(), lastName(), emailAddress(), phoneNumber, passwordHash(), Account.AccountType.STANDARD);
-        var user2 = new User(firstName(), lastName(), emailAddress(), phoneNumber, passwordHash(), Account.AccountType.STANDARD);
+        var user1 = new User(firstName(), lastName(), emailAddress(), phoneNumber, passwordHash(), AuthManager.Role.STANDARD_USER);
+        var user2 = new User(firstName(), lastName(), emailAddress(), phoneNumber, passwordHash(), AuthManager.Role.STANDARD_USER);
 
         assertDoesNotThrow(() ->userRepo.addUser(user1));
 

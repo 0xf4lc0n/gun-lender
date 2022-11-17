@@ -1,8 +1,6 @@
 package gunlender.domain.services;
 
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,12 +36,11 @@ public class JwtService {
         return true;
     }
 
-    public Optional<String> getRole(String token) {
+    public Optional<Jws<Claims>> getClaims(String token) {
         try {
             var jwt = token.split(" ")[1];
             var claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(jwt);
-            var role = claims.getBody().get("Role", String.class);
-            return Optional.of(role);
+            return Optional.of(claims);
         } catch (JwtException ex) {
             logger.error("Cannot parse JWT token", ex);
             return Optional.empty();

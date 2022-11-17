@@ -20,25 +20,33 @@ public class AuthManager implements AccessManager {
 
     @Override
     public void manage(@NotNull Handler handler, @NotNull Context ctx, @NotNull Set<? extends RouteRole> set) throws Exception {
-        var userRole = getRole(ctx);
+        var userInfo = getUserInfo(ctx);
 
-        if (set.contains(userRole)) {
-            ctx.sessionAttribute("Role", roleToString(userRole));
+        if (set.contains(userInfo.Role)) {
+            ctx.sessionAttribute("Role", roleToString(userInfo.Role));
+            ctx.sessionAttribute("Email", userInfo.Email);
             handler.handle(ctx);
         } else {
             ctx.status(401).result("Unauthorized");
         }
     }
 
-    private Role getRole(Context ctx) {
+    private UserInfo getUserInfo(Context ctx) {
         var jwt = ctx.header("Authorization");
 
         if (jwt != null) {
-            return roleFromString(jwtService.getRole(jwt).orElse("anyone"));
+            var claims = jwtService.getClaims(jwt);
+            if (claims.isPresent()) {
+                var role = claims.get().getBody().get("Role", String.class);
+                var subject = claims.get().getBody().getSubject();
+                return new UserInfo(roleFromString(role), subject);
+            }
         }
 
-        return Role.ANYONE;
+        return new UserInfo(Role.ANYONE, "");
     }
+
+    private record UserInfo(Role Role, String Email) {}
 
     public enum Role implements RouteRole {
         ANYONE, STANDARD_USER, ADMINISTRATOR
@@ -46,7 +54,7 @@ public class AuthManager implements AccessManager {
 
     public static Role roleFromString(String role) {
         return switch (role.toLowerCase(Locale.ROOT)) {
-            case "standard" -> Role.STANDARD_USER;
+            case "standard_user" -> Role.STANDARD_USER;
             case "administrator" -> Role.ADMINISTRATOR;
             default -> Role.ANYONE;
         };
@@ -58,5 +66,9 @@ public class AuthManager implements AccessManager {
             case STANDARD_USER -> "standard_user";
             case ANYONE -> "anyone";
         };
+    }
+
+    public static boolean isLoggedUserAdmin(Context ctx) {
+        return ctx.sessionAttribute("Role") == AuthManager.roleToString(Role.ADMINISTRATOR);
     }
 }

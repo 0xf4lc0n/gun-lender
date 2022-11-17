@@ -1,5 +1,6 @@
 package gunlender.domain.entities;
 
+import gunlender.domain.services.AuthManager;
 import lombok.Getter;
 
 import java.sql.ResultSet;
@@ -14,14 +15,14 @@ public class User {
     private String email;
     private String phoneNumber;
     private String passwordHash;
-    private Account.AccountType accountType;
+    private AuthManager.Role accountType;
 
     private static final String SQL_DEFINITION = "(Id VARCHAR(16) UNIQUE, FirstName VARCHAR(64), " +
             "LastName VARCHAR(128), Email VARCHAR(64) UNIQUE, PasswordHash VARCHAR(512), " +
             "PhoneNumber VARCHAR(9) UNIQUE, AccountType VARCHAR(32))";
 
     public User(String firstName, String lastName, String email, String phoneNumber, String passwordHash,
-                Account.AccountType type) {
+                AuthManager.Role type) {
         this.id = UUID.randomUUID();
         this.firstName = firstName;
         this.lastName = lastName;
@@ -42,7 +43,7 @@ public class User {
         user.email = rs.getString("Email");
         user.passwordHash = rs.getString("PasswordHash");
         user.phoneNumber = rs.getString("PhoneNumber");
-        user.accountType = Account.FromString(rs.getString("AccountType"));
+        user.accountType = AuthManager.roleFromString(rs.getString("AccountType"));
 
         return user;
     }

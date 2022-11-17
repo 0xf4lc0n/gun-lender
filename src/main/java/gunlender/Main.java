@@ -9,10 +9,7 @@ import gunlender.infrastructure.database.AmmoRepository;
 import gunlender.infrastructure.database.GunRepository;
 import gunlender.infrastructure.database.LendingRepository;
 import gunlender.infrastructure.database.UserRepository;
-import gunlender.server.routes.HealthCheckHandler;
-import gunlender.server.routes.LoginHandler;
-import gunlender.server.routes.RegisterHandler;
-import gunlender.server.routes.UserController;
+import gunlender.server.routes.*;
 import io.javalin.Javalin;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +55,11 @@ public class Main {
             get("health_check", new HealthCheckHandler(), AuthManager.Role.ANYONE);
             post("register", new RegisterHandler(userRepo, cryptoService), AuthManager.Role.ANYONE);
             post("login", new LoginHandler(userRepo, cryptoService, jwtService), AuthManager.Role.ANYONE);
-            crud("user/{user-id}", new UserController(userRepo), AuthManager.Role.STANDARD_USER, AuthManager.Role.ADMINISTRATOR);
+            patch("user/{user-id}/password/", new ChangePasswordHandler(cryptoService, userRepo),
+                    AuthManager.Role.STANDARD_USER, AuthManager.Role.ADMINISTRATOR);
+            patch("user/{user-id}/role/", new ChangeRoleHandler(userRepo), AuthManager.Role.ADMINISTRATOR);
+            crud("user/{user-id}", new UserController(userRepo), AuthManager.Role.STANDARD_USER,
+                    AuthManager.Role.ADMINISTRATOR);
         });
 
         app.exception(RepositoryException.class, (ex, ctx) -> {

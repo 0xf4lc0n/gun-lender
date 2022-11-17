@@ -1,10 +1,10 @@
 package gunlender.server.routes;
 
 import gunlender.application.dto.RegisterUserDto;
-import gunlender.domain.entities.Account;
 import gunlender.domain.entities.User;
 import gunlender.domain.exceptions.CryptoException;
 import gunlender.domain.exceptions.RepositoryException;
+import gunlender.domain.services.AuthManager;
 import gunlender.domain.services.CryptoService;
 import gunlender.infrastructure.database.UserRepository;
 import io.javalin.http.Context;
@@ -37,7 +37,7 @@ public class RegisterHandler implements Handler {
                 registerDto.getEmail(),
                 registerDto.getPhoneNumber(),
                 passwordHash,
-                Account.AccountType.STANDARD);
+                AuthManager.Role.STANDARD_USER);
 
         userRepository.addUser(newUser);
 

@@ -12,11 +12,14 @@ import gunlender.infrastructure.database.UserRepository;
 import gunlender.server.routes.HealthCheckHandler;
 import gunlender.server.routes.LoginHandler;
 import gunlender.server.routes.RegisterHandler;
+import gunlender.server.routes.UserController;
 import io.javalin.Javalin;
 import org.slf4j.LoggerFactory;
 
 import javax.crypto.SecretKeyFactory;
 import java.security.NoSuchAlgorithmException;
+
+import static io.javalin.apibuilder.ApiBuilder.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -49,14 +52,14 @@ public class Main {
             System.exit(1);
         }
 
-
         var app = Javalin.create();
         app.cfg.accessManager(new AuthManager(jwtService));
-        app.get("health_check", new HealthCheckHandler(), AuthManager.Role.ANYONE);
-        app.post("register", new RegisterHandler(userRepo, cryptoService), AuthManager.Role.ANYONE);
-        app.post("login", new LoginHandler(userRepo, cryptoService, jwtService), AuthManager.Role.ANYONE);
-        app.get("user", ctx -> ctx.result("Logged as user"), AuthManager.Role.STANDARD_USER);
-        app.get("admin", ctx -> ctx.result("Logged as administrator"), AuthManager.Role.ADMINISTRATOR);
+        app.routes(() -> {
+            get("health_check", new HealthCheckHandler(), AuthManager.Role.ANYONE);
+            post("register", new RegisterHandler(userRepo, cryptoService), AuthManager.Role.ANYONE);
+            post("login", new LoginHandler(userRepo, cryptoService, jwtService), AuthManager.Role.ANYONE);
+            crud("user/{user-id}", new UserController(userRepo), AuthManager.Role.STANDARD_USER, AuthManager.Role.ADMINISTRATOR);
+        });
 
         app.exception(RepositoryException.class, (ex, ctx) -> {
             logger.error("Repository error", ex);

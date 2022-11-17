@@ -23,6 +23,7 @@ public class AuthManager implements AccessManager {
         var userRole = getRole(ctx);
 
         if (set.contains(userRole)) {
+            ctx.sessionAttribute("Role", roleToString(userRole));
             handler.handle(ctx);
         } else {
             ctx.status(401).result("Unauthorized");
@@ -43,11 +44,19 @@ public class AuthManager implements AccessManager {
         ANYONE, STANDARD_USER, ADMINISTRATOR
     }
 
-    private Role roleFromString(String role) {
+    public static Role roleFromString(String role) {
         return switch (role.toLowerCase(Locale.ROOT)) {
             case "standard" -> Role.STANDARD_USER;
             case "administrator" -> Role.ADMINISTRATOR;
             default -> Role.ANYONE;
+        };
+    }
+
+    public static String roleToString(Role role) {
+        return switch (role) {
+            case ADMINISTRATOR -> "administrator";
+            case STANDARD_USER -> "standard_user";
+            case ANYONE -> "anyone";
         };
     }
 }

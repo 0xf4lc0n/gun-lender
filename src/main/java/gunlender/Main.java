@@ -50,7 +50,14 @@ public class Main {
             System.exit(1);
         }
 
-        var app = Javalin.create();
+        var app = Javalin.create(config -> {
+            config.plugins.enableCors(cors -> {
+                cors.add(it -> {
+                    it.anyHost();
+                    it.exposeHeader("Authorization");
+                });
+            });
+        });
         app.cfg.accessManager(new AuthManager(jwtService));
         app.routes(() -> {
             get("health_check", new HealthCheckHandler(), AuthManager.Role.ANYONE);

@@ -19,7 +19,7 @@ public class JwtService {
 
     public String generateJwt(String userEmail, String role) {
         var date = Calendar.getInstance();
-        date.add(Calendar.MINUTE, 30);
+        date.add(Calendar.MINUTE, 400);
         var expTime = date.getTime();
         return Jwts.builder().setSubject(userEmail).claim("Role", role).setExpiration(expTime).signWith(key).compact();
     }

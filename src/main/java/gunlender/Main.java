@@ -55,6 +55,7 @@ public class Main {
                 cors.add(it -> {
                     it.anyHost();
                     it.exposeHeader("Authorization");
+                    it.exposeHeader("UserRole");
                 });
             });
         });

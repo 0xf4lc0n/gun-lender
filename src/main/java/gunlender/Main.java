@@ -69,7 +69,7 @@ public class Main {
             patch("user/{user-id}/role/", new ChangeRoleHandler(userRepo), AuthManager.Role.ADMINISTRATOR);
             crud("user/{user-id}", new UserController(userRepo), AuthManager.Role.STANDARD_USER, AuthManager.Role.ADMINISTRATOR);
             crud("ammo/{ammo-id}", new AmmoController(ammoRepo), AuthManager.Role.STANDARD_USER, AuthManager.Role.ADMINISTRATOR);
-            crud("gun/{gun-id}", new GunController(gunRepo), AuthManager.Role.STANDARD_USER, AuthManager.Role.ADMINISTRATOR);
+            crud("gun/{gun-id}", new GunController(gunRepo), AuthManager.Role.ANYONE);
         });
 
         app.exception(RepositoryException.class, (ex, ctx) -> {

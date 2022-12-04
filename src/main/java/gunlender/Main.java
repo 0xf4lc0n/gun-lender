@@ -62,6 +62,7 @@ public class Main {
         app.cfg.accessManager(new AuthManager(jwtService));
         app.routes(() -> {
             get("health_check", new HealthCheckHandler(), AuthManager.Role.ANYONE);
+            get("me", new UserInfoHandler(userRepo), AuthManager.Role.STANDARD_USER, AuthManager.Role.ADMINISTRATOR);
             post("register", new RegisterHandler(userRepo, cryptoService), AuthManager.Role.ANYONE);
             post("login", new LoginHandler(userRepo, cryptoService, jwtService), AuthManager.Role.ANYONE);
             patch("user/{user-id}/password/", new ChangePasswordHandler(cryptoService, userRepo), AuthManager.Role.STANDARD_USER, AuthManager.Role.ADMINISTRATOR);

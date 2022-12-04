@@ -3,6 +3,7 @@ package gunlender.server.routes;
 import gunlender.application.dto.AmmoDto;
 import gunlender.domain.entities.Ammo;
 import gunlender.domain.exceptions.RepositoryException;
+import gunlender.domain.services.AuthManager;
 import gunlender.infrastructure.database.AmmoRepository;
 import io.javalin.apibuilder.CrudHandler;
 import io.javalin.http.Context;
@@ -20,6 +21,11 @@ public class AmmoController implements CrudHandler {
 
     @Override
     public void create(@NotNull Context context) {
+        if (!AuthManager.isLoggedUserAdmin(context)) {
+            context.status(400).result("Insufficient permissions");
+            return;
+        }
+
         final AmmoDto ammo = context.bodyAsClass(AmmoDto.class);
         try {
             ammoRepository.addAmmo(
@@ -39,6 +45,11 @@ public class AmmoController implements CrudHandler {
 
     @Override
     public void delete(@NotNull Context context, @NotNull String s) {
+        if (!AuthManager.isLoggedUserAdmin(context)) {
+            context.status(400).result("Insufficient permissions");
+            return;
+        }
+
         try {
             context.status(ammoRepository.removeAmmo(UUID.fromString(s)) == 0 ? 404 : 200);
         } catch (RepositoryException e) {
@@ -76,6 +87,11 @@ public class AmmoController implements CrudHandler {
 
     @Override
     public void update(@NotNull Context context, @NotNull String s) {
+        if (!AuthManager.isLoggedUserAdmin(context)) {
+            context.status(400).result("Insufficient permissions");
+            return;
+        }
+
         final AmmoDto ammo = context.bodyAsClass(AmmoDto.class);
         try {
             ammoRepository.updateAmmo(

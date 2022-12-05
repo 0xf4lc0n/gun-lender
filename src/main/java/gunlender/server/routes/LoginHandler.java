@@ -36,6 +36,7 @@ public class LoginHandler implements Handler {
         if (cryptoService.comparePasswordAndHash(loginDto.getPassword(), storedPasswordHash)) {
             var jwt = jwtService.generateJwt(user.get().getEmail(), user.get().getAccountType().name());
             ctx.status(200).header("Authorization", "Bearer " + jwt);
+            ctx.status(200).header("UserRole", user.get().getAccountType().name() );
         } else {
             ctx.status(400).result("Password or email address are invalid");
         }

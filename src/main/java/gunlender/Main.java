@@ -53,11 +53,12 @@ public class Main {
         var app = Javalin.create(config -> config.plugins.enableCors(cors -> cors.add(it -> {
             it.anyHost();
             it.exposeHeader("Authorization");
+            it.exposeHeader("UserRole");
         })));
-
         app.cfg.accessManager(new AuthManager(jwtService));
         app.routes(() -> {
             get("health_check", new HealthCheckHandler(), AuthManager.Role.ANYONE);
+            get("me", new UserInfoHandler(userRepo), AuthManager.Role.STANDARD_USER, AuthManager.Role.ADMINISTRATOR);
             post("register", new RegisterHandler(userRepo, cryptoService), AuthManager.Role.ANYONE);
             post("login", new LoginHandler(userRepo, cryptoService, jwtService), AuthManager.Role.ANYONE);
             patch("user/{user-id}/password/", new ChangePasswordHandler(cryptoService, userRepo),
@@ -68,7 +69,7 @@ public class Main {
             crud("ammo/{ammo-id}", new AmmoController(ammoRepo), AuthManager.Role.STANDARD_USER,
                     AuthManager.Role.ADMINISTRATOR);
             crud("gun/{gun-id}", new GunController(gunRepo), AuthManager.Role.STANDARD_USER,
-                    AuthManager.Role.ADMINISTRATOR);
+                    AuthManager.Role.ADMINISTRATOR, AuthManager.Role.ANYONE);
             crud("lending/{lending-id}", new LendingController(lendingRepo, gunRepo, ammoRepo, userRepo),
                     AuthManager.Role.STANDARD_USER, AuthManager.Role.ADMINISTRATOR);
         });

@@ -71,4 +71,8 @@ public class AuthManager implements AccessManager {
     public static boolean isLoggedUserAdmin(Context ctx) {
         return ctx.sessionAttribute("Role") == AuthManager.roleToString(Role.ADMINISTRATOR);
     }
+
+    public static boolean isLogged(Context ctx) {
+        return ctx.sessionAttribute("Role") != AuthManager.roleToString(Role.ANYONE);
+    }
 }

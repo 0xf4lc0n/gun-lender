@@ -74,6 +74,11 @@ public class GunController implements CrudHandler {
 
     @Override
     public void getOne(@NotNull Context ctx, @NotNull String s) {
+        if (!AuthManager.isLogged(ctx)) {
+            ctx.status(401).result("Unauthorized");
+            return;
+        }
+
         var gunId = UUID.fromString(s);
         Optional<Gun> gun;
 

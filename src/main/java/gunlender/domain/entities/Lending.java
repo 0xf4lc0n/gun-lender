@@ -37,7 +37,7 @@ public class Lending {
         lending.gunId = UUID.fromString(rs.getString("GunId"));
         lending.ammoId = UUID.fromString(rs.getString("AmmoId"));
         lending.ammoAmount = rs.getInt("AmmoAmount");
-        lending.reservationDate = rs.getTimestamp("ReservationDate").toInstant();
+        lending.reservationDate = Instant.parse(rs.getString("ReservationDate"));
         lending.totalPrice = rs.getDouble("TotalPrice");
 
         return lending;

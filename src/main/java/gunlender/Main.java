@@ -50,24 +50,27 @@ public class Main {
             System.exit(1);
         }
 
-        var app = Javalin.create(config -> {
-            config.plugins.enableCors(cors -> {
-                cors.add(it -> {
-                    it.anyHost();
-                    it.exposeHeader("Authorization");
-                });
-            });
-        });
+        var app = Javalin.create(config -> config.plugins.enableCors(cors -> cors.add(it -> {
+            it.anyHost();
+            it.exposeHeader("Authorization");
+        })));
+
         app.cfg.accessManager(new AuthManager(jwtService));
         app.routes(() -> {
             get("health_check", new HealthCheckHandler(), AuthManager.Role.ANYONE);
             post("register", new RegisterHandler(userRepo, cryptoService), AuthManager.Role.ANYONE);
             post("login", new LoginHandler(userRepo, cryptoService, jwtService), AuthManager.Role.ANYONE);
-            patch("user/{user-id}/password/", new ChangePasswordHandler(cryptoService, userRepo), AuthManager.Role.STANDARD_USER, AuthManager.Role.ADMINISTRATOR);
+            patch("user/{user-id}/password/", new ChangePasswordHandler(cryptoService, userRepo),
+                    AuthManager.Role.STANDARD_USER, AuthManager.Role.ADMINISTRATOR);
             patch("user/{user-id}/role/", new ChangeRoleHandler(userRepo), AuthManager.Role.ADMINISTRATOR);
-            crud("user/{user-id}", new UserController(userRepo), AuthManager.Role.STANDARD_USER, AuthManager.Role.ADMINISTRATOR);
-            crud("ammo/{ammo-id}", new AmmoController(ammoRepo), AuthManager.Role.STANDARD_USER, AuthManager.Role.ADMINISTRATOR);
-            crud("gun/{gun-id}", new GunController(gunRepo), AuthManager.Role.STANDARD_USER, AuthManager.Role.ADMINISTRATOR);
+            crud("user/{user-id}", new UserController(userRepo), AuthManager.Role.STANDARD_USER,
+                    AuthManager.Role.ADMINISTRATOR);
+            crud("ammo/{ammo-id}", new AmmoController(ammoRepo), AuthManager.Role.STANDARD_USER,
+                    AuthManager.Role.ADMINISTRATOR);
+            crud("gun/{gun-id}", new GunController(gunRepo), AuthManager.Role.STANDARD_USER,
+                    AuthManager.Role.ADMINISTRATOR);
+            crud("lending/{lending-id}", new LendingController(lendingRepo, gunRepo, ammoRepo, userRepo),
+                    AuthManager.Role.STANDARD_USER, AuthManager.Role.ADMINISTRATOR);
         });
 
         app.exception(RepositoryException.class, (ex, ctx) -> {

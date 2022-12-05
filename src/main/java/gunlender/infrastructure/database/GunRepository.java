@@ -86,28 +86,33 @@ public class GunRepository implements Repository {
 
     public void updateGun(UUID id, GunDto gun) throws RepositoryException {
         try (var connection = getConnection()) {
-            try (var statement = connection.prepareStatement("update guns set Producer = ?, Model = ?," +
-                    "Type = ?, Caliber = ?, Weight = ?, Length = ?, Amount = ?, Price = ?, Picture = ? where Id = ?")) {
-                statement.setQueryTimeout(30);
-
-                statement.setString(1, gun.getProducer());
-                statement.setString(2, gun.getModel());
-                statement.setString(3, gun.getType().name());
-                statement.setString(4, gun.getCaliber());
-                statement.setDouble(5, gun.getWeight());
-                statement.setInt(6, gun.getLength());
-                statement.setInt(7, gun.getAmount());
-                statement.setDouble(8, gun.getPrice());
-                statement.setString(9, gun.getPicture());
-                statement.setString(10, id.toString());
-
-                statement.executeUpdate();
-            }
+            updateGun(id, gun, connection);
         } catch (SQLException e) {
             throw new RepositoryException("Cannot insert gun to database", e);
         }
     }
 
+    public void updateGun(UUID id, GunDto gun, Connection connection) throws RepositoryException {
+        try (var statement = connection.prepareStatement("update guns set Producer = ?, Model = ?," +
+                "Type = ?, Caliber = ?, Weight = ?, Length = ?, Amount = ?, Price = ?, Picture = ? where Id = ?")) {
+            statement.setQueryTimeout(30);
+
+            statement.setString(1, gun.getProducer());
+            statement.setString(2, gun.getModel());
+            statement.setString(3, gun.getType().name());
+            statement.setString(4, gun.getCaliber());
+            statement.setDouble(5, gun.getWeight());
+            statement.setInt(6, gun.getLength());
+            statement.setInt(7, gun.getAmount());
+            statement.setDouble(8, gun.getPrice());
+            statement.setString(9, gun.getPicture());
+            statement.setString(10, id.toString());
+
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RepositoryException("Cannot insert gun to database", e);
+        }
+    }
 
     public void deleteGun(UUID id) throws RepositoryException {
         try (var connection = getConnection()) {
